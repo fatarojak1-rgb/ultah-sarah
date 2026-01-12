@@ -1,215 +1,36 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<title>12 Januari – Donghua Energy</title>
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
 
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  height:100vh;
-  overflow:hidden;
-  font-family:'Segoe UI',sans-serif;
-  background:radial-gradient(circle at top,#1b2a4e,#070b1a);
-  color:#eaf2ff;
+using namespace std;
+
+int main() {
+    int angkaRahasia, tebakan;
+    int percobaan = 0;
+
+    srand(time(0));
+    angkaRahasia = rand() % 100 + 1;
+
+    cout << "==============================" << endl;
+    cout << "     GAME TEBAK ANGKA 🎮  By daman   " << endl;
+    cout << "==============================" << endl;
+    cout << "Tebak angka antara 1 - 100\n\n";
+
+    do {
+        cout << "Masukkan tebakan kamu: ";
+        cin >> tebakan;
+        percobaan++;
+
+        if (tebakan > angkaRahasia) {
+            cout << "Terlalu besar!\n\n";
+        } else if (tebakan < angkaRahasia) {
+            cout << "Terlalu kecil!\n\n";
+        } else {
+            cout << "🎉 Selamat! Tebakan kamu benar!\n";
+            cout << "Jumlah percobaan: " << percobaan << endl;
+        }
+
+    } while (tebakan != angkaRahasia);
+
+    return 0;
 }
-
-/* background particles */
-canvas{
-  position:fixed;
-  inset:0;
-  z-index:0;
-}
-
-/* UI */
-.ui{
-  position:relative;
-  z-index:2;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  padding:20px;
-}
-
-.header{
-  text-align:center;
-}
-.header h1{
-  margin:0;
-  font-size:26px;
-  letter-spacing:1px;
-}
-.header p{
-  opacity:.85;
-  margin-top:6px;
-}
-
-/* card */
-.card{
-  margin:auto;
-  width:340px;
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(10px);
-  border-radius:18px;
-  padding:20px;
-  box-shadow:0 0 40px rgba(120,160,255,.35);
-  text-align:center;
-  animation:fadeUp 1.5s ease;
-}
-
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(30px)}
-  to{opacity:1;transform:none}
-}
-
-.card h2{
-  margin:5px 0;
-}
-.sub{
-  font-size:14px;
-  opacity:.85;
-}
-
-/* GAME */
-.game-area{
-  margin-top:20px;
-  height:220px;
-  position:relative;
-  border-radius:14px;
-  background:linear-gradient(180deg,#0d1733,#060a18);
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.12);
-}
-
-.orb{
-  width:55px;
-  height:55px;
-  border-radius:50%;
-  position:absolute;
-  background:radial-gradient(circle at top,#9fd4ff,#2b6cff);
-  box-shadow:0 0 25px rgba(120,170,255,.9);
-  cursor:pointer;
-  animation:pulse 1.2s infinite alternate;
-}
-
-@keyframes pulse{
-  from{transform:scale(1)}
-  to{transform:scale(1.15)}
-}
-
-.energy{
-  margin-top:12px;
-  font-size:15px;
-}
-
-.progress{
-  margin-top:8px;
-  height:8px;
-  background:rgba(255,255,255,.15);
-  border-radius:6px;
-  overflow:hidden;
-}
-.bar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#6fb1ff,#a98cff);
-  transition:.3s;
-}
-
-.footer{
-  text-align:center;
-  font-size:12px;
-  opacity:.6;
-}
-</style>
-</head>
-
-<body>
-
-<canvas id="bg"></canvas>
-
-<div class="ui">
-  <div class="header">
-    <h1>12 Januari</h1>
-    <p>Donghua Energy Trial</p>
-  </div>
-
-  <div class="card">
-    <h2>Sarah Nur Aprilliya</h2>
-    <div class="sub">Energy Cultivation Mini Game</div>
-
-    <div class="game-area" id="area">
-      <div class="orb" id="orb"></div>
-    </div>
-
-    <div class="energy">
-      Energy Collected: <b><span id="score">0</span></b>
-    </div>
-
-    <div class="progress">
-      <div class="bar" id="bar"></div>
-    </div>
-  </div>
-
-  <div class="footer">
-    Click the orb • Increase your energy • Donghua style
-  </div>
-</div>
-
-<script>
-/* ===== background particles ===== */
-const c=document.getElementById("bg"),ctx=c.getContext("2d");
-function resize(){c.width=innerWidth;c.height=innerHeight}
-resize();addEventListener("resize",resize);
-
-let p=Array.from({length:80},()=>({
-  x:Math.random()*c.width,
-  y:Math.random()*c.height,
-  r:Math.random()*2+1,
-  s:Math.random()*0.5+0.2
-}));
-
-function draw(){
-  ctx.clearRect(0,0,c.width,c.height);
-  ctx.fillStyle="rgba(150,190,255,.8)";
-  p.forEach(o=>{
-    ctx.beginPath();
-    ctx.arc(o.x,o.y,o.r,0,Math.PI*2);
-    ctx.fill();
-    o.y+=o.s;
-    if(o.y>c.height)o.y=0;
-  });
-  requestAnimationFrame(draw);
-}
-draw();
-
-/* ===== game logic ===== */
-const orb=document.getElementById("orb");
-const area=document.getElementById("area");
-const scoreEl=document.getElementById("score");
-const bar=document.getElementById("bar");
-
-let score=0;
-
-function moveOrb(){
-  const maxX=area.clientWidth-55;
-  const maxY=area.clientHeight-55;
-  orb.style.left=Math.random()*maxX+"px";
-  orb.style.top=Math.random()*maxY+"px";
-}
-moveOrb();
-
-orb.onclick=()=>{
-  score++;
-  scoreEl.textContent=score;
-  bar.style.width=Math.min(score*5,100)+"%";
-  moveOrb();
-};
-
-setInterval(moveOrb,1200);
-</script>
-
-</body>
-</html>
